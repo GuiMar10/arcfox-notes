@@ -230,7 +230,7 @@
     animation: welcomeanimation 0.5s;
     resize: none;
     &::placeholder {
-      color: #35343b;
+      opacity: 0.3;
     }
   }
   @keyframes welcomeanimation {
