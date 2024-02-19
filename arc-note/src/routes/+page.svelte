@@ -4,12 +4,12 @@
     return document.querySelector(element);
   }
 
-  var noteTitle = "Untitled Note";
+  var noteTitle = "New Note";
   function refreshNoteTitle() {
     if (getElem("input#notetitle").value == "") {
-      noteTitle = "Untitled Note";
+      noteTitle = "New Note";
     } else {
-      noteTitle = getElem("input#notetitle").value + " - Arc Note";
+      noteTitle = getElem("input#notetitle").value;
     }
   }
   // 💡 Auto-growing textarea (from DreamTeK - Stack Overflow: https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize)
@@ -112,6 +112,7 @@
 <textarea
   on:input={OnInput}
   value={notecontentfromurl}
+  placeholder="Your best ideas here..."
   type="text"
   id="notecontent"
 />
@@ -140,6 +141,22 @@
     :global(body) {
       padding: 3.75rem;
       text-align: center;
+    }
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      background: #1a1922;
+      --md-sys-on-background: #e7e3fd;
+    }
+    textarea#notecontent {
+      color: white;
+    }
+    input#copysharelink {
+      background: rgba(255, 255, 255, 0.062);
+      color: white;
+    }
+    input#copysharelink::selection {
+      color: black;
     }
   }
   button#sharenotebutton {
@@ -210,7 +227,11 @@
     width: calc(60% - 1rem);
     height: calc(100vh - 270px);
     text-align: left;
+    animation: welcomeanimation 0.5s;
     resize: none;
+    &::placeholder {
+      color: #35343b;
+    }
   }
   @keyframes welcomeanimation {
     from {
