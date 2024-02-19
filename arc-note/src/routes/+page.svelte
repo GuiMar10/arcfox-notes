@@ -9,7 +9,7 @@
     if (getElem("input#notetitle").value == "") {
       noteTitle = "Untitled Note";
     } else {
-      noteTitle = getElem("input#notetitle").value;
+      noteTitle = getElem("input#notetitle").value + " - Arc Note";
     }
   }
   // 💡 Auto-growing textarea (from DreamTeK - Stack Overflow: https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize)
@@ -77,6 +77,23 @@
       document.querySelector("input#notetitle").focus();
     }
   }
+  var sharebuttontoggle = 0;
+  function shareButtonToggle() {
+    if (sharebuttontoggle == 0) {
+      sharebuttontoggle = 1;
+      document.querySelector("input#copysharelink").value =
+        `https://quite-arc-note.vercel.app/?notetitle=${getElem(
+          "input#notetitle"
+        ).value.replace(/\s/g, "+")}&notecontent=${getElem(
+          "textarea#notecontent"
+        ).value.replace(/\s/g, "+")}`;
+
+      document.querySelector("input#copysharelink").style = "display: block";
+    } else {
+      sharebuttontoggle = 0;
+      document.querySelector("input#copysharelink").style = "display: none";
+    }
+  }
 </script>
 
 <link rel="icon" href="/favicons/Rocket.png" />
@@ -99,14 +116,12 @@
   id="notecontent"
 />
 
-<!--
 <input
-  on:click={() => document.querySelector("input.copysharelink").select()}
+  on:click={() => document.querySelector("input#copysharelink").select()}
   id="copysharelink"
   readonly
-/> 
-<button id="sharenotebutton">ios_share</button>
--->
+/>
+<button id="sharenotebutton" on:click={shareButtonToggle}>ios_share</button>
 
 <style lang="scss">
   @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
@@ -141,9 +156,28 @@
     color: var(--md-sys-on-background);
   }
   input#copysharelink {
+    font-family: var(--md-sys-font-main);
+    display: none;
     position: fixed;
     bottom: 70px;
     right: 15px;
+    padding: 10px;
+    border: 0;
+    border-radius: 10px;
+    color: var(--md-sys-on-background);
+    animation: sharelinkwelcome 0.3s;
+    transition: 0.3s;
+    &::selection {
+      background: var(--md-sys-on-background);
+      color: white;
+    }
+    &:active {
+      transform: scale(0.95);
+    }
+    &:focus {
+      outline: 0;
+      border: 1px solid var(--md-sys-on-background);
+    }
   }
   input#notetitle {
     color: var(--md-sys-on-background);
@@ -182,6 +216,18 @@
     from {
       margin-left: -10px;
       opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes sharelinkwelcome {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    60% {
+      transform: scale(1.05);
     }
     to {
       opacity: 1;
