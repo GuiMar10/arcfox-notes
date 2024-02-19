@@ -4,10 +4,10 @@
     return document.querySelector(element);
   }
 
-  var noteTitle = "Nota sem título";
+  var noteTitle = "Untitled Note";
   function refreshNoteTitle() {
     if (getElem("input#notetitle").value == "") {
-      noteTitle = "Nota sem título";
+      noteTitle = "Untitled Note";
     } else {
       noteTitle = getElem("input#notetitle").value;
     }
@@ -23,12 +23,59 @@
     }
   }
 
+  function parseURLParams() {
+    var url = "https://split.me/?page1=&page2=";
+    if (typeof window !== "undefined") {
+      url = window.location.href;
+    }
+    if (url.includes("?")) {
+      var queryStart = url.indexOf("?") + 1,
+        queryEnd = url.indexOf("#") + 1 || url.length + 1,
+        query = url.slice(queryStart, queryEnd - 1),
+        pairs = query.replace(/\+/g, " ").split("&"),
+        parms = {},
+        i,
+        n,
+        v,
+        nv;
+
+      if (query === url || query === "") return;
+
+      for (i = 0; i < pairs.length; i++) {
+        nv = pairs[i].split("=", 2);
+        n = decodeURIComponent(nv[0]);
+        v = decodeURIComponent(nv[1]);
+
+        if (!parms.hasOwnProperty(n)) parms[n] = [];
+        parms[n].push(nv.length === 2 ? v : null);
+      }
+      return parms;
+    } else {
+      return {
+        notetitle: [""],
+        notecontent: [""],
+      };
+    }
+  }
+  var notecontentfromurl = "";
+  var notetitlefromurl = "";
+
+  if (typeof parseURLParams().notetitle !== "undefined") {
+    notetitlefromurl = parseURLParams().notetitle;
+  }
+
+  if (typeof parseURLParams().notecontent !== "undefined") {
+    notecontentfromurl = parseURLParams().notecontent;
+  }
+
   function OnInput() {
     this.style.height = 0;
     this.style.height = this.scrollHeight + "px";
   }
   if (typeof window !== "undefined") {
-    document.querySelector("input#notetitle").focus();
+    if (notetitlefromurl == "") {
+      document.querySelector("input#notetitle").focus();
+    }
   }
 </script>
 
@@ -40,16 +87,34 @@
   type="text"
   id="notetitle"
   placeholder="Title"
+  value={notetitlefromurl}
   on:input={refreshNoteTitle}
   on:change={() => document.querySelector("textarea#notecontent").focus()}
 />
 <br />
-<textarea on:input={OnInput} type="text" id="notecontent" />
+<textarea
+  on:input={OnInput}
+  value={notecontentfromurl}
+  type="text"
+  id="notecontent"
+/>
+
+<!--
+<input
+  on:click={() => document.querySelector("input.copysharelink").select()}
+  id="copysharelink"
+  readonly
+/> 
+<button id="sharenotebutton">ios_share</button>
+-->
 
 <style lang="scss">
   @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+  @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0");
   :root {
     --md-sys-font-main: Nunito;
+    --md-sys-on-background: #231866;
+    background: #f5f3ff;
   }
   @media screen and (max-width: 600px) {
     :global(body) {
@@ -59,15 +124,34 @@
   @media screen and (min-width: 600px) {
     :global(body) {
       padding: 3.75rem;
+      text-align: center;
     }
   }
+  button#sharenotebutton {
+    font-family: Material Symbols Outlined;
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    color: var(--md-sys-on-background);
+  }
+  input#copysharelink {
+    position: fixed;
+    bottom: 70px;
+    right: 15px;
+  }
   input#notetitle {
-    color: #231866;
+    color: var(--md-sys-on-background);
     font-family: var(--md-sys-font-main);
     margin-top: 15px;
     border: 0;
     outline: 0;
-    width: calc(100% - 1rem);
+    width: calc(60% - 1rem);
     height: 20%;
     font-size: 3.25rem;
     font-style: normal;
@@ -89,8 +173,8 @@
     line-height: normal;
     border: 0;
     outline: 0;
-    width: calc(100% - 10px);
-    height: 100vh;
+    width: calc(60% - 1rem);
+    height: calc(100vh - 270px);
     text-align: left;
     resize: none;
   }
