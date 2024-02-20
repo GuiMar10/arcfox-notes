@@ -11,6 +11,7 @@
     } else {
       noteTitle = getElem("input#notetitle").value;
     }
+    refreshNoteUrl();
   }
   // 💡 Auto-growing textarea (from DreamTeK - Stack Overflow: https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize)
   if (typeof window !== "undefined") {
@@ -74,6 +75,20 @@
     notecontentfromurl = parseURLParams().notecontent;
   }
 
+  function refreshNoteUrl() {
+    window.history.pushState(
+      "data",
+      "title",
+      `/?notetitle=${getElem("input#notetitle").value.replace(
+        /\s/g,
+        "+"
+      )}&notecontent=${getElem("textarea#notecontent").value.replace(
+        /\s/g,
+        "+"
+      )}`
+    );
+  }
+
   function OnInput() {
     this.style.height = 0;
     if (this.value !== "") {
@@ -81,6 +96,7 @@
     } else {
       this.style.height = "calc(100vh - 270px)";
     }
+    refreshNoteUrl();
   }
   if (typeof window !== "undefined") {
     if (notetitlefromurl == "") {
