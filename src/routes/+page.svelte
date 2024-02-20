@@ -52,51 +52,60 @@
       return parms;
     } else {
       return {
-        notetitle: [""],
-        notecontent: [""],
+        notetitle: "",
+        notecontent: "",
       };
     }
   }
   var notecontentfromurl = "";
   var notetitlefromurl = "";
 
-  if (typeof parseURLParams().notetitle !== "undefined") {
+  if (parseURLParams().notetitle !== undefined) {
     notetitlefromurl = parseURLParams().notetitle;
+    if (parseURLParams().notetitle !== "") {
+      noteTitle = notetitlefromurl;
+      if (parseURLParams().notetitle[0] == "") {
+        noteTitle = "New Note";
+      }
+    }
   }
 
-  if (typeof parseURLParams().notecontent !== "undefined") {
+  if (parseURLParams().notecontent !== undefined) {
     notecontentfromurl = parseURLParams().notecontent;
   }
 
   function OnInput() {
     this.style.height = 0;
-    this.style.height = this.scrollHeight + "px";
+    if (this.value !== "") {
+      this.style.height = this.scrollHeight + "px";
+    } else {
+      this.style.height = "calc(100vh - 270px)";
+    }
   }
   if (typeof window !== "undefined") {
     if (notetitlefromurl == "") {
-      document.querySelector("input#notetitle").focus();
+      getElem("input#notetitle").focus();
     }
   }
   var sharebuttontoggle = 0;
   function shareButtonToggle() {
     if (sharebuttontoggle == 0) {
       sharebuttontoggle = 1;
-      document.querySelector("input#copysharelink").value =
+      getElem("input#copysharelink").value =
         `https://quite-arc-note.vercel.app/?notetitle=${getElem(
           "input#notetitle"
         ).value.replace(/\s/g, "+")}&notecontent=${getElem(
           "textarea#notecontent"
         ).value.replace(/\s/g, "+")}`;
 
-      document.querySelector("input#copysharelink").style = "display: block";
+      getElem("input#copysharelink").style = "display: block";
     } else {
       sharebuttontoggle = 0;
-      document.querySelector("input#copysharelink").style = "display: none";
+      getElem("input#copysharelink").style = "display: none";
     }
   }
 </script>
 
-<link rel="icon" href="/favicons/Rocket.png" />
 <title>{noteTitle}</title>
 <!-- ✨ Note Editor -->
 <br />
@@ -106,7 +115,7 @@
   placeholder="Title"
   value={notetitlefromurl}
   on:input={refreshNoteTitle}
-  on:change={() => document.querySelector("textarea#notecontent").focus()}
+  on:change={() => getElem("textarea#notecontent").focus()}
 />
 <br />
 <textarea
@@ -118,7 +127,7 @@
 />
 
 <input
-  on:click={() => document.querySelector("input#copysharelink").select()}
+  on:click={() => getElem("input#copysharelink").select()}
   id="copysharelink"
   readonly
 />
@@ -131,17 +140,6 @@
     --md-sys-font-main: Nunito;
     --md-sys-on-background: #231866;
     background: #f5f3ff;
-  }
-  @media screen and (max-width: 600px) {
-    :global(body) {
-      padding: 1.8rem;
-    }
-  }
-  @media screen and (min-width: 600px) {
-    :global(body) {
-      padding: 3.75rem;
-      text-align: center;
-    }
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -252,6 +250,21 @@
     }
     to {
       opacity: 1;
+    }
+  }
+  /* Screen Sizes */
+  @media screen and (max-width: 600px) {
+    :global(body) {
+      padding: 1.8rem;
+    }
+    textarea#notecontent {
+      width: calc(100vw - 60px);
+    }
+  }
+  @media screen and (min-width: 600px) {
+    :global(body) {
+      padding: 3.75rem;
+      text-align: center;
     }
   }
 </style>
