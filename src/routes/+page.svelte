@@ -81,10 +81,9 @@
       `/?notetitle=${getElem("input#notetitle").value.replace(
         /\s/g,
         "+"
-      )}&notecontent=${getElem("textarea#notecontent").value.replace(
-        /\s/g,
-        "+"
-      )}`
+      )}&notecontent=${getElem("textarea#notecontent")
+        .value.replace(/[\r\n]/gm, "%0A")
+        .replace(/\s/g, "+")}`
     );
   }
 
@@ -111,7 +110,9 @@
           "input#notetitle"
         ).value.replace(/\s/g, "+")}&notecontent=${getElem(
           "textarea#notecontent"
-        ).value.replace(/\s/g, "+")}`;
+        )
+          .value.replace(/[\r\n]/gm, "%0A")
+          .replace(/\s/g, "+")}`;
 
       getElem("input#copysharelink").style = "display: block";
     } else {
