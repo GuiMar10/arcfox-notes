@@ -107,7 +107,7 @@
     if (sharebuttontoggle == 0) {
       sharebuttontoggle = 1;
       getElem("input#copysharelink").value =
-        `https://quite-arc-note.vercel.app/?notetitle=${getElem(
+        `https://arcfox-notes.vercel.app/?notetitle=${getElem(
           "input#notetitle"
         ).value.replace(/\s/g, "+")}&notecontent=${getElem(
           "textarea#notecontent"
