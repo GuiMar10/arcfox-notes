@@ -1,4 +1,5 @@
 <script>
+  import { pushState } from "$app/navigation";
   // 🤖 Function to get elements using DOM
   function getElem(element) {
     return document.querySelector(element);
@@ -76,9 +77,7 @@
   }
 
   function refreshNoteUrl() {
-    window.history.pushState(
-      "data",
-      "title",
+    pushState(
       `/?notetitle=${getElem("input#notetitle").value.replace(
         /\s/g,
         "+"
