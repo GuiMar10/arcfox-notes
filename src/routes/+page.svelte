@@ -78,13 +78,17 @@
 
   function refreshNoteUrl() {
     pushState(
-      `/?notetitle=${getElem("input#notetitle").value.replace(
-        /\s/g,
-        "+"
-      )}&notecontent=${getElem("textarea#notecontent")
+      `/?notetitle=${getElem("input#notetitle")
+        .value.replace(/\s/g, "+")
+        .replaceAll("?", "%3F")
+        .replaceAll("&", "%26")
+        .replaceAll("=", "%3D")}&notecontent=${getElem("textarea#notecontent")
         .value.replaceAll("%", "%25")
         .replace(/[\r\n]/gm, "%0A")
-        .replace(/\s/g, "+")}`
+        .replace(/\s/g, "+")
+        .replaceAll("?", "%3F")
+        .replaceAll("&", "%26")
+        .replaceAll("=", "%3D")}`
     );
   }
 
@@ -109,10 +113,16 @@
       getElem("input#copysharelink").value =
         `https://arcfox-notes.vercel.app/?notetitle=${getElem("input#notetitle")
           .value.replaceAll("%", "%25")
-          .replace(/\s/g, "+")}&notecontent=${getElem("textarea#notecontent")
+          .replace(/\s/g, "+")
+          .replaceAll("?", "%3F")
+          .replaceAll("&", "%26")
+          .replaceAll("=", "%3D")}&notecontent=${getElem("textarea#notecontent")
           .value.replaceAll("%", "%25")
           .replace(/[\r\n]/gm, "%0A")
-          .replace(/\s/g, "+")}`;
+          .replace(/\s/g, "+")
+          .replaceAll("?", "%3F")
+          .replaceAll("&", "%26")
+          .replaceAll("=", "%3D")}`;
 
       getElem("input#copysharelink").style = "display: block";
     } else {
