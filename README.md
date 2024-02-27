@@ -3,7 +3,7 @@
 
 Features:
 
-- [x] Share Notes (Buggy)
+- [x] Share Notes
 - [x] Keep notes on refresh
 - [ ] Rich-text and Markdown features
 - [ ] Dynamic color (ArcFox)
