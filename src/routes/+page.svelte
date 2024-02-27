@@ -1,5 +1,7 @@
 <script>
+  // 🛠️ Imports
   import { pushState } from "$app/navigation";
+
   // 🤖 Function to get elements using DOM
   function getElem(element) {
     return document.querySelector(element);
@@ -14,19 +16,9 @@
     }
     refreshNoteUrl();
   }
-  // 💡 Auto-growing textarea (from DreamTeK - Stack Overflow: https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize)
-  if (typeof window !== "undefined") {
-    const tx = document.getElementsByTagName("textarea");
-    for (let i = 0; i < tx.length; i++) {
-      tx[i].setAttribute(
-        "style",
-        "height:" + tx[i].scrollHeight + "px;overflow-y:hidden;"
-      );
-    }
-  }
 
   function parseURLParams() {
-    var url = "https://split.me/?page1=&page2=";
+    var url = "";
     if (typeof window !== "undefined") {
       url = window.location.href;
     }
@@ -78,20 +70,13 @@
 
   function refreshNoteUrl() {
     pushState(
-      `/?notetitle=${getElem("input#notetitle")
-        .value.replace(/\s/g, "+")
-        .replaceAll("?", "%3F")
-        .replaceAll("&", "%26")
-        .replaceAll("=", "%3D")}&notecontent=${getElem("textarea#notecontent")
-        .value.replaceAll("%", "%25")
-        .replace(/[\r\n]/gm, "%0A")
-        .replace(/\s/g, "+")
-        .replaceAll("?", "%3F")
-        .replaceAll("&", "%26")
-        .replaceAll("=", "%3D")}`
+      `/?notetitle=${strToUrlFriendly(
+        getElem("input#notetitle").value
+      )}&notecontent=${strToUrlFriendly(getElem("textarea#notecontent").value)}`
     );
   }
 
+  // 📖 Changes the height of note depending on the number of text
   function OnInput() {
     this.style.height = 0;
     if (this.value !== "") {
@@ -101,28 +86,35 @@
     }
     refreshNoteUrl();
   }
+
+  // 🛠️ Focuses the title input if there isn't a title already
   if (typeof window !== "undefined") {
     if (notetitlefromurl == "") {
       getElem("input#notetitle").focus();
     }
   }
+
+  // 🧠 String to Url-friendly
+  function strToUrlFriendly(text) {
+    return text
+      .replaceAll("%", "%25")
+      .replace(/[\r\n]/gm, "%0A")
+      .replace(/\s/g, "+")
+      .replaceAll("?", "%3F")
+      .replaceAll("&", "%26")
+      .replaceAll("=", "%3D");
+  }
+
   var sharebuttontoggle = 0;
   function shareButtonToggle() {
     if (sharebuttontoggle == 0) {
       sharebuttontoggle = 1;
       getElem("input#copysharelink").value =
-        `https://arcfox-notes.vercel.app/?notetitle=${getElem("input#notetitle")
-          .value.replaceAll("%", "%25")
-          .replace(/\s/g, "+")
-          .replaceAll("?", "%3F")
-          .replaceAll("&", "%26")
-          .replaceAll("=", "%3D")}&notecontent=${getElem("textarea#notecontent")
-          .value.replaceAll("%", "%25")
-          .replace(/[\r\n]/gm, "%0A")
-          .replace(/\s/g, "+")
-          .replaceAll("?", "%3F")
-          .replaceAll("&", "%26")
-          .replaceAll("=", "%3D")}`;
+        `https://arcfox-notes.vercel.app/?notetitle=${strToUrlFriendly(
+          getElem("input#notetitle").value
+        )}&notecontent=${strToUrlFriendly(
+          getElem("textarea#notecontent").value
+        )}`;
 
       getElem("input#copysharelink").style = "display: block";
     } else {
@@ -130,18 +122,23 @@
       getElem("input#copysharelink").style = "display: none";
     }
   }
+
+  function titleKeyUp(event) {
+    if (event.keyCode == 13) {
+      getElem("textarea#notecontent").focus();
+    }
+  }
 </script>
 
 <title>{noteTitle}</title>
 <!-- ✨ Note Editor -->
-<br />
 <input
   type="text"
   id="notetitle"
   placeholder="Title"
   value={notetitlefromurl}
+  on:keyup={titleKeyUp}
   on:input={refreshNoteTitle}
-  on:change={() => getElem("textarea#notecontent").focus()}
 />
 <br />
 <textarea
@@ -165,23 +162,8 @@
   :root {
     --md-sys-font-main: Nunito;
     --md-sys-on-background: #231866;
+    --md-sys-selection: rgba(34, 24, 102, 0.15);
     background: #f5f3ff;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      background: #1a1922;
-      --md-sys-on-background: #e7e3fd;
-    }
-    textarea#notecontent {
-      color: white;
-    }
-    input#copysharelink {
-      background: rgba(255, 255, 255, 0.062);
-      color: white;
-    }
-    input#copysharelink::selection {
-      color: black;
-    }
   }
   button#sharenotebutton {
     font-family: Material Symbols Outlined;
@@ -205,6 +187,7 @@
     padding: 10px;
     border: 0;
     border-radius: 10px;
+    cursor: pointer;
     color: var(--md-sys-on-background);
     animation: sharelinkwelcome 0.3s;
     transition: 0.3s;
@@ -237,6 +220,9 @@
     &::placeholder {
       opacity: 0.3;
     }
+    &::selection {
+      background: var(--md-sys-selection);
+    }
   }
   textarea#notecontent {
     background: none;
@@ -255,6 +241,9 @@
     resize: none;
     &::placeholder {
       opacity: 0.3;
+    }
+    &::selection {
+      background: var(--md-sys-selection);
     }
   }
   @keyframes welcomeanimation {
@@ -291,6 +280,24 @@
     :global(body) {
       padding: 3.75rem;
       text-align: center;
+    }
+  }
+  /* 🌛 Dark color scheme */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      background: #1a1922;
+      --md-sys-on-background: #e7e3fd;
+      --md-sys-selection: rgba(231, 227, 253, 0.15);
+    }
+    textarea#notecontent {
+      color: white;
+    }
+    input#copysharelink {
+      background: rgba(255, 255, 255, 0.062);
+      color: white;
+    }
+    input#copysharelink::selection {
+      color: black;
     }
   }
 </style>
